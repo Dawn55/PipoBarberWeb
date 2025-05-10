@@ -1,0 +1,22 @@
+BEGIN TRY
+
+BEGIN TRAN;
+
+-- AlterTable
+EXEC SP_RENAME N'dbo.PK_Users', N'Users_pkey';
+ALTER TABLE [dbo].[Users] ALTER COLUMN [email] VARCHAR(50) NULL;
+ALTER TABLE [dbo].[Users] ALTER COLUMN [password] VARCHAR(max) NULL;
+ALTER TABLE [dbo].[Users] ADD [isGuest] BIT NOT NULL CONSTRAINT [Users_isGuest_df] DEFAULT 0;
+
+COMMIT TRAN;
+
+END TRY
+BEGIN CATCH
+
+IF @@TRANCOUNT > 0
+BEGIN
+    ROLLBACK TRAN;
+END;
+THROW
+
+END CATCH

@@ -1,0 +1,45 @@
+generator client { 
+provider = "prisma-client-js"
+}
+datasource db { 
+provider = "sqlserver" 
+url = env("DATABASE_URL")
+}
+model User {
+  id             Int      @id @default(autoincrement())
+  name           String   @db.VarChar(50)
+  surname        String   @db.VarChar(50)
+  phoneNumber    String   @db.NChar(11)
+  email          String?  @unique @db.VarChar(50)
+  password       String?  @db.VarChar(MAX)
+  isAdmin        Boolean  @default(false)
+  isGuest        Boolean  @default(false)
+  createdAt      DateTime @default(now()) @db.DateTime2
+  updatedAt      DateTime @updatedAt @db.DateTime2
+  appointments   Appointment[]
+  appointmentMessages AppointmentMessage[]
+
+  @@map("Users")
+}
+
+model Appointment { 
+id Int @id(map: "PK_Appointments") @default(autoincrement()) 
+userId Int 
+description String @db.VarChar(500) 
+date DateTime @db.Date 
+time DateTime @db.Time 
+createdAt DateTime @default(now()) @db.DateTime2 
+user User @relation(fields: [userId], references: [id], onUpdate: NoAction, map: "FK_Appointments_Users") 
+messages AppointmentMessage[] 
+@@map("Appointments")
+}
+model AppointmentMessage { 
+id Int @id(map: "PK_AppointmentMessages") @default(autoincrement()) 
+appointmentId Int 
+senderId Int 
+text String @db.VarChar(500) 
+createdAt DateTime @default(now()) @db.DateTime2 
+appointment Appointment @relation(fields: [appointmentId], references: [id], onUpdate: NoAction, map: "FK_AppointmentMessages_Appointments") 
+sender User @relation(fields: [senderId], references: [id], onUpdate: NoAction, map: "FK_AppointmentMessages_Users") 
+@@map("AppointmentMessages")
+}
