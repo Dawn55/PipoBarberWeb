@@ -19,7 +19,8 @@ export async function GET() {
         email: true,
         phoneNumber: true,
         isAdmin: true,
-        createdAt: true
+        createdAt: true,
+        isGuest : true 
       },
       orderBy: {
         createdAt: 'desc'

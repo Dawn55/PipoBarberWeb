@@ -2,7 +2,6 @@
 
 import { useState, useEffect } from 'react';
 import { useSession } from 'next-auth/react';
-import { format } from 'date-fns';
 import NewAppointmentForm from '@/components/appointments/AppointmentForm';
 import AppointmentList from '@/components/appointments/AppointmentList';
 import AppointmentDetails from '@/components/appointments/AppointmentDetails';
@@ -128,7 +127,7 @@ export default function Appointments() {
             ) : selectedAppointment ? (
               <AppointmentDetails 
                 appointment={selectedAppointment}
-                onMessageAdded={handleMessageAdded}
+                onMessageSent={handleMessageAdded}
                 currentUserId={parseInt(session?.user?.id)}
                 isAdmin={session?.user?.isAdmin}
               />

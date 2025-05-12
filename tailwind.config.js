@@ -8,9 +8,15 @@ module.exports = {
   theme: {
     extend: {
       colors: {
-        primary: '#121212',
-        secondary: '#222222',
-        accent: '#c0a080',
+        primary: '#000000',       // Siyah
+        secondary: '#1a1a1a',     // Koyu gri
+        accent: '#e5e7eb',        // Gümüş rengi
+        light: '#f3f4f6',         // Açık gri/beyaz
+        dark: '#0a0a0a',          // Çok koyu gri
+      },
+      gradientColorStops: {
+        'dark-start': '#0d0d0d',
+        'dark-end': '#1a1a1a',
       },
     },
   },

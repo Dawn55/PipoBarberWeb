@@ -10,7 +10,7 @@ model User {
   name           String   @db.VarChar(50)
   surname        String   @db.VarChar(50)
   phoneNumber    String   @db.NChar(11)
-  email          String?  @unique @db.VarChar(50)
+  email          String  @unique @db.VarChar(50)
   password       String?  @db.VarChar(MAX)
   isAdmin        Boolean  @default(false)
   isGuest        Boolean  @default(false)
@@ -23,16 +23,21 @@ model User {
 }
 
 model Appointment { 
-id Int @id(map: "PK_Appointments") @default(autoincrement()) 
-userId Int 
-description String @db.VarChar(500) 
-date DateTime @db.Date 
-time DateTime @db.Time 
-createdAt DateTime @default(now()) @db.DateTime2 
-user User @relation(fields: [userId], references: [id], onUpdate: NoAction, map: "FK_Appointments_Users") 
-messages AppointmentMessage[] 
-@@map("Appointments")
+  id Int @id(map: "PK_Appointments") @default(autoincrement()) 
+  userId Int 
+  description String @db.VarChar(500) 
+  date DateTime @db.Date 
+  time DateTime @db.Time 
+  createdAt DateTime @default(now()) @db.DateTime2 
+  status Int @default(0) // ← Yeni alan burada
+  user User @relation(fields: [userId], references: [id], onUpdate: NoAction, map: "FK_Appointments_Users") 
+  messages AppointmentMessage[] 
+  token String? @unique @default(uuid()) @db.VarChar(100)
+
+
+  @@map("Appointments")
 }
+
 model AppointmentMessage { 
 id Int @id(map: "PK_AppointmentMessages") @default(autoincrement()) 
 appointmentId Int 

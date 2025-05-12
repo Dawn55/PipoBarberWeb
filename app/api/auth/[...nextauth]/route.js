@@ -2,7 +2,6 @@ import NextAuth from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
 import { PrismaClient } from "@prisma/client";
 import bcrypt from "bcryptjs";
-
 const prisma = new PrismaClient();
 
 export const authOptions = {
@@ -25,7 +24,7 @@ export const authOptions = {
             },
           });
 
-          if (!user) {
+          if (!user || !user.password) {
             return null;
           }
 
@@ -39,10 +38,13 @@ export const authOptions = {
           }
 
           return {
-            id: user.id.toString(),
-            email: user.email,
-            name: `${user.name} ${user.surname}`,
-            isAdmin: user.isAdmin,
+          id: user.id.toString(),
+          email: user.email,
+          name: `${user.name} ${user.surname}`,
+          phone: user.phoneNumber,
+          isAdmin: user.isAdmin,
+          isGuest: user.isGuest,
+          image: user.image
           };
         } catch (error) {
           console.error("Authentication error:", error);
@@ -56,22 +58,24 @@ export const authOptions = {
       if (user) {
         token.id = user.id;
         token.isAdmin = user.isAdmin;
+        token.isGuest = user.isGuest;
+        token.phone = user.phone;
       }
       return token;
     },
     async session({ session, token }) {
-      if (token && session.user) {
-        session.user = {
-          ...session.user,
-          id: token.id,
-          isAdmin: token.isAdmin,
-        };
+      if (session.user) {
+        session.user.id = parseInt(token.id);
+        session.user.isAdmin = token.isAdmin;
+        session.user.isGuest = token.isGuest;
+        session.user.phone = token.phone;
       }
       return session;
     },
   },
   session: {
     strategy: "jwt",
+    maxAge: 30 * 24 * 60 * 60
   },
   pages: {
     signIn: "/login",
@@ -79,6 +83,6 @@ export const authOptions = {
   secret: process.env.NEXTAUTH_SECRET,
 };
 
+// ✅ App Router uyumlu named exports (GET & POST)
 const handler = NextAuth(authOptions);
-
 export { handler as GET, handler as POST };

@@ -40,12 +40,6 @@ export default function AppointmentForm() {
     try {
       // Format the date and time for the API
       const dateObj = new Date(`${formData.date}T${formData.time}`);
-      console.log(JSON.stringify({
-          userId: parseInt(session.user.id),
-          description: formData.description,
-          date: formData.date,
-          time: formData.time,
-        }))
       
       if (isNaN(dateObj.getTime())) {
         throw new Error("Invalid date or time");
@@ -95,7 +89,7 @@ export default function AppointmentForm() {
   
   // Calculate max date (3 months from now)
   const maxDate = new Date();
-  maxDate.setMonth(maxDate.getMonth() + 3);
+  maxDate.setMonth(maxDate.getMonth() + 1);
   const maxDateString = maxDate.toISOString().split("T")[0];
 
   return (

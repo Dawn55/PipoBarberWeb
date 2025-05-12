@@ -10,8 +10,12 @@ export async function middleware(request) {
     request.nextUrl.pathname.startsWith("/register");
   const isAdminPage = request.nextUrl.pathname.startsWith("/admin");
   const isAppointmentPage = request.nextUrl.pathname.startsWith("/appointments");
+  const isGuestPage = request.nextUrl.pathname.startsWith("/guests")
   
   if (isAuthenticated && isAuthPage) {
+    return NextResponse.redirect(new URL("/", request.url));
+  }
+  if(isAuthenticated && isGuestPage){
     return NextResponse.redirect(new URL("/", request.url));
   }
   
@@ -27,5 +31,5 @@ export async function middleware(request) {
 }
 
 export const config = {
-  matcher: ["/login/:path*", "/register/:path*", "/appointments/:path*", "/admin/:path*"],
+  matcher: ["/login/:path*", "/register/:path*", "/appointments/:path*", "/admin/:path*","/guests/:path*"],
 };

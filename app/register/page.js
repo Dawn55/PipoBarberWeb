@@ -19,7 +19,14 @@ export default function Register() {
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setFormData({ ...formData, [name]: value });
+    
+    // Telefon numarası için sadece sayıları kabul et
+    if (name === 'phoneNumber') {
+      const numbersOnly = value.replace(/\D/g, '').slice(0, 10);
+      setFormData({ ...formData, [name]: numbersOnly });
+    } else {
+      setFormData({ ...formData, [name]: value });
+    }
   };
 
   const handleSubmit = async (e) => {
@@ -28,13 +35,13 @@ export default function Register() {
     setError('');
 
     if (formData.password !== formData.confirmPassword) {
-      setError('Passwords do not match');
+      setError('Şifreler eşleşmiyor');
       setIsLoading(false);
       return;
     }
 
-    if (formData.phoneNumber.length !== 11) {
-      setError('Phone number must be 11 digits');
+    if (formData.phoneNumber.length !== 10) {
+      setError('Telefon numarası 10 haneli olmalıdır (Başına 0 eklemeyin)');
       setIsLoading(false);
       return;
     }
@@ -48,7 +55,7 @@ export default function Register() {
         body: JSON.stringify({
           name: formData.name,
           surname: formData.surname,
-          phoneNumber: formData.phoneNumber,
+          phoneNumber: `0${formData.phoneNumber}`, // Başına 0 ekliyoruz
           email: formData.email,
           password: formData.password,
         }),
@@ -57,12 +64,12 @@ export default function Register() {
       const data = await response.json();
 
       if (!response.ok) {
-        setError(data.message || 'Registration failed');
+        setError(data.message || 'Kayıt işlemi başarısız oldu');
       } else {
         router.push('/login?registered=true');
       }
     } catch (error) {
-      setError('An error occurred during registration');
+      setError('Kayıt sırasında bir hata oluştu');
     } finally {
       setIsLoading(false);
     }
@@ -73,16 +80,16 @@ export default function Register() {
       <div className="max-w-md w-full space-y-8">
         <div>
           <h2 className="mt-6 text-center text-3xl font-extrabold text-white">
-            Create your account
+            Hesap Oluştur
           </h2>
           <p className="mt-2 text-center text-sm text-gray-400">
-            Or{' '}
+            Zaten hesabınız var mı?{' '}
             <Link href="/login" className="text-accent hover:text-accent-dark">
-              sign in to your existing account
+              Giriş yapın
             </Link>
           </p>
         </div>
-        <div className="card">
+        <div className="bg-gray-800 p-8 rounded-lg shadow-lg">
           <form className="space-y-6" onSubmit={handleSubmit}>
             {error && (
               <div className="bg-red-500 text-white p-3 rounded-md text-sm">
@@ -92,7 +99,7 @@ export default function Register() {
             <div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
               <div>
                 <label htmlFor="name" className="block text-sm font-medium text-gray-300">
-                  First Name
+                  Ad
                 </label>
                 <div className="mt-1">
                   <input
@@ -102,15 +109,15 @@ export default function Register() {
                     required
                     value={formData.name}
                     onChange={handleChange}
-                    className="input"
-                    placeholder="Enter your first name"
+                    className="w-full px-4 py-3 rounded-md bg-gray-700 text-white border border-gray-600 focus:outline-none focus:border-accent"
+                    placeholder="Adınız"
                   />
                 </div>
               </div>
 
               <div>
                 <label htmlFor="surname" className="block text-sm font-medium text-gray-300">
-                  Last Name
+                  Soyad
                 </label>
                 <div className="mt-1">
                   <input
@@ -120,8 +127,8 @@ export default function Register() {
                     required
                     value={formData.surname}
                     onChange={handleChange}
-                    className="input"
-                    placeholder="Enter your last name"
+                    className="w-full px-4 py-3 rounded-md bg-gray-700 text-white border border-gray-600 focus:outline-none focus:border-accent"
+                    placeholder="Soyadınız"
                   />
                 </div>
               </div>
@@ -129,7 +136,7 @@ export default function Register() {
 
             <div>
               <label htmlFor="phoneNumber" className="block text-sm font-medium text-gray-300">
-                Phone Number
+                Telefon Numarası
               </label>
               <div className="mt-1">
                 <input
@@ -139,16 +146,18 @@ export default function Register() {
                   required
                   value={formData.phoneNumber}
                   onChange={handleChange}
-                  className="input"
-                  placeholder="Enter your phone number (11 digits)"
-                  pattern="[0-9]{11}"
+                  className="w-full px-4 py-3 rounded-md bg-gray-700 text-white border border-gray-600 focus:outline-none focus:border-accent"
+                  placeholder="5555555555 (Başına 0 eklemeyin)"
+                  pattern="[0-9]{10}"
+                  maxLength="10"
                 />
+                <p className="text-gray-400 text-xs mt-1">10 haneli telefon numarası girin (örn: 5555555555)</p>
               </div>
             </div>
 
             <div>
               <label htmlFor="email" className="block text-sm font-medium text-gray-300">
-                Email address
+                Email Adresi
               </label>
               <div className="mt-1">
                 <input
@@ -159,15 +168,15 @@ export default function Register() {
                   required
                   value={formData.email}
                   onChange={handleChange}
-                  className="input"
-                  placeholder="Enter your email"
+                  className="w-full px-4 py-3 rounded-md bg-gray-700 text-white border border-gray-600 focus:outline-none focus:border-accent"
+                  placeholder="Email adresiniz"
                 />
               </div>
             </div>
 
             <div>
               <label htmlFor="password" className="block text-sm font-medium text-gray-300">
-                Password
+                Şifre
               </label>
               <div className="mt-1">
                 <input
@@ -178,15 +187,15 @@ export default function Register() {
                   required
                   value={formData.password}
                   onChange={handleChange}
-                  className="input"
-                  placeholder="Enter your password"
+                  className="w-full px-4 py-3 rounded-md bg-gray-700 text-white border border-gray-600 focus:outline-none focus:border-accent"
+                  placeholder="Şifreniz"
                 />
               </div>
             </div>
 
             <div>
               <label htmlFor="confirmPassword" className="block text-sm font-medium text-gray-300">
-                Confirm Password
+                Şifre Tekrar
               </label>
               <div className="mt-1">
                 <input
@@ -197,8 +206,8 @@ export default function Register() {
                   required
                   value={formData.confirmPassword}
                   onChange={handleChange}
-                  className="input"
-                  placeholder="Confirm your password"
+                  className="w-full px-4 py-3 rounded-md bg-gray-700 text-white border border-gray-600 focus:outline-none focus:border-accent"
+                  placeholder="Şifrenizi tekrar girin"
                 />
               </div>
             </div>
@@ -207,9 +216,9 @@ export default function Register() {
               <button
                 type="submit"
                 disabled={isLoading}
-                className="w-full btn btn-primary"
+                className="w-full bg-accent hover:bg-accent-dark text-black font-medium py-3 px-4 rounded-md transition duration-200 disabled:opacity-50"
               >
-                {isLoading ? 'Creating account...' : 'Create account'}
+                {isLoading ? 'Hesap oluşturuluyor...' : 'Hesap Oluştur'}
               </button>
             </div>
           </form>
