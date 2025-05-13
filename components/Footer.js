@@ -7,32 +7,32 @@ export default function Footer() {
         <div className="flex flex-col md:flex-row justify-between items-center">
           <div className="mb-6 md:mb-0">
             <Link href="/" className="text-accent text-2xl font-bold">
-              Stylish Barber
+              Pipo Berber
             </Link>
             <p className="mt-2 text-gray-400">
-              Professional barbershop services since 2010
+              2010'dan beri profesyonel berberlik hizmetleri
             </p>
           </div>
           
           <div className="grid grid-cols-2 gap-8 sm:gap-6 sm:grid-cols-3">
             <div>
               <h3 className="text-sm font-semibold text-white tracking-wider uppercase mb-4">
-                Navigation
+                Navigasyon
               </h3>
               <ul className="space-y-2">
                 <li>
                   <Link href="/" className="text-gray-400 hover:text-white">
-                    Home
+                    Ana Sayfa
                   </Link>
                 </li>
                 <li>
                   <Link href="/about" className="text-gray-400 hover:text-white">
-                    About
+                    Hakkımızda
                   </Link>
                 </li>
                 <li>
                   <Link href="/appointments" className="text-gray-400 hover:text-white">
-                    Appointments
+                    Randevular
                   </Link>
                 </li>
               </ul>
@@ -40,34 +40,34 @@ export default function Footer() {
             
             <div>
               <h3 className="text-sm font-semibold text-white tracking-wider uppercase mb-4">
-                Contact
+                İletişim
               </h3>
               <ul className="space-y-2">
                 <li className="text-gray-400">
-                  123 Barber Street
+                  Kaptanağa Sokak No:11
                 </li>
                 <li className="text-gray-400">
-                  New York, NY 10001
+                  Kale Mahallesi, İlkadım, Samsun
                 </li>
                 <li className="text-gray-400">
-                  +1 (555) 123-4567
+                  +90 542 609 1351
                 </li>
               </ul>
             </div>
             
             <div>
               <h3 className="text-sm font-semibold text-white tracking-wider uppercase mb-4">
-                Hours
+                Çalışma Saatleri
               </h3>
               <ul className="space-y-2">
                 <li className="text-gray-400">
-                  Mon-Fri: 9am - 8pm
+                  Pazartesi-Cuma: 09:00 - 20:00
                 </li>
                 <li className="text-gray-400">
-                  Saturday: 10am - 6pm
+                  Cumartesi: 10:00 - 18:00
                 </li>
                 <li className="text-gray-400">
-                  Sunday: Closed
+                  Pazar: Kapalı
                 </li>
               </ul>
             </div>
@@ -96,7 +96,7 @@ export default function Footer() {
             </a>
           </div>
           <p className="mt-8 text-base text-gray-400 md:mt-0 md:order-1">
-            &copy; {new Date().getFullYear()} Stylish Barber. All rights reserved.
+            &copy; {new Date().getFullYear()} Pipo Berber. Tüm hakları saklıdır.
           </p>
         </div>
       </div>

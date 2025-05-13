@@ -42,11 +42,11 @@ export default function Navbar() {
             </div>
             <div className="hidden md:block ml-10">
               <div className="flex items-center space-x-4">
-                <NavLink href="/">Home</NavLink>
-                <NavLink href="/about">About</NavLink>
-                {session && <NavLink href="/appointments">Appointments</NavLink>}
+                <NavLink href="/">Ana Sayfa</NavLink>
+                <NavLink href="/about">Hakkımızda</NavLink>
+                {session && <NavLink href="/appointments">Randevular</NavLink>}
                 {session?.user?.isAdmin && (
-                  <NavLink href="/admin">Admin Panel</NavLink>
+                  <NavLink href="/admin">Yönetici Paneli</NavLink>
                 )}
               </div>
             </div>
@@ -56,22 +56,22 @@ export default function Navbar() {
               {session ? (
                 <div className="flex items-center space-x-4">
                   <span>
-                    Welcome, {session.user.name} {session.user.surname}
+                    Hoş geldiniz, {session.user.name} {session.user.surname}
                   </span>
                   <button
                     onClick={() => signOut()}
                     className="btn btn-secondary"
                   >
-                    Sign Out
+                    Çıkış Yap
                   </button>
                 </div>
               ) : (
                 <div className="space-x-4">
                   <Link href="/login" className="btn btn-secondary">
-                    Login
+                    Giriş Yap
                   </Link>
                   <Link href="/register" className="btn btn-primary">
-                    Register
+                    Kayıt Ol
                   </Link>
                 </div>
               )}
@@ -82,7 +82,7 @@ export default function Navbar() {
               onClick={toggleMenu}
               className="inline-flex items-center justify-center p-2 rounded-md text-gray-400 hover:text-white hover:bg-secondary focus:outline-none focus:ring-2 focus:ring-inset focus:ring-white"
             >
-              <span className="sr-only">Open main menu</span>
+              <span className="sr-only">Menüyü aç</span>
               <svg
                 className={`${isMenuOpen ? 'hidden' : 'block'} h-6 w-6`}
                 xmlns="http://www.w3.org/2000/svg"
@@ -124,20 +124,20 @@ export default function Navbar() {
             href="/"
             className="block px-3 py-2 rounded-md text-base font-medium text-gray-300 hover:bg-secondary hover:text-white"
           >
-            Home
+            Ana Sayfa
           </Link>
           <Link
             href="/about"
             className="block px-3 py-2 rounded-md text-base font-medium text-gray-300 hover:bg-secondary hover:text-white"
           >
-            About
+            Hakkımızda
           </Link>
           {session && (
             <Link
               href="/appointments"
               className="block px-3 py-2 rounded-md text-base font-medium text-gray-300 hover:bg-secondary hover:text-white"
             >
-              Appointments
+              Randevular
             </Link>
           )}
           {session?.user?.isAdmin && (
@@ -145,7 +145,7 @@ export default function Navbar() {
               href="/admin"
               className="block px-3 py-2 rounded-md text-base font-medium text-gray-300 hover:bg-secondary hover:text-white"
             >
-              Admin Panel
+              Yönetici Paneli
             </Link>
           )}
           {session ? (
@@ -161,7 +161,7 @@ export default function Navbar() {
                   onClick={() => signOut()}
                   className="block w-full text-left px-3 py-2 rounded-md text-base font-medium text-gray-300 hover:bg-secondary hover:text-white"
                 >
-                  Sign Out
+                  Çıkış Yap
                 </button>
               </div>
             </div>
@@ -172,13 +172,13 @@ export default function Navbar() {
                   href="/login"
                   className="block px-3 py-2 rounded-md text-base font-medium text-gray-300 hover:bg-secondary hover:text-white"
                 >
-                  Login
+                  Giriş Yap
                 </Link>
                 <Link
                   href="/register"
                   className="block px-3 py-2 rounded-md text-base font-medium text-gray-300 hover:bg-secondary hover:text-white"
                 >
-                  Register
+                  Kayıt Ol
                 </Link>
               </div>
             </div>
