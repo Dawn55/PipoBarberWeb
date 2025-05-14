@@ -68,7 +68,7 @@ export default function GuestAppointmentForm() {
 
       if (!res.ok) {
         const errorData = await res.json();
-        throw new Error(errorData.message || "Randevu oluşturulamadı");
+        throw new Error(errorData.error || "Randevu oluşturulamadı");
       }
 
       const data = await res.json();

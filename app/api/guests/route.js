@@ -71,7 +71,7 @@ export async function POST(request) {
             }
           });
         } catch (createError) {
-          // Diğer transaction'ların tamamlanmasını bekleyip tekrar dene
+          
           user = await tx.user.findFirst({
             where: { phoneNumber: cleanedPhoneNumber }
           });
@@ -93,6 +93,31 @@ export async function POST(request) {
     const appointmentTime = new Date(appointmentDate);
     appointmentTime.setHours(Number(hours));
     appointmentTime.setMinutes(Number(minutes));
+       
+    const existingAppointments = await prisma.appointment.findMany({
+      where: {
+        date: appointmentDate,
+        status: {
+          not: 2,
+        },
+      },
+    });
+    
+    
+    const timeExists = existingAppointments.some(app => {
+      const appTime = new Date(app.time);
+      return appTime.getHours() === Number(hours) && 
+             appTime.getMinutes() === Number(minutes);
+    });
+    
+    if (timeExists) {
+      return NextResponse.json(
+        {
+          error: "Bu tarih ve saatte başka bir randevu bulunmaktadır. Lütfen başka bir zaman seçiniz.",
+        },
+        { status: 409 }
+      );
+    }
 
     const appointment = await prisma.appointment.create({
       data: {

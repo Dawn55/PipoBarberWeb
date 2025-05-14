@@ -12,7 +12,7 @@ export async function POST(req) {
         headers: { "Content-Type": "application/json" },
       });
     }
-    console.log(session.user.id)
+    
     const userId = session.user.id;
     const { receiver_id, title, description } = await req.json();
     
@@ -22,7 +22,7 @@ export async function POST(req) {
         headers: { "Content-Type": "application/json" },
       });
     }
-    console.log(prisma)
+    
 
     const receiver = await prisma.user.findUnique({
       where: { id: parseInt(receiver_id) }

@@ -92,7 +92,7 @@ export default function MessageDrawer({ isOpen, onClose }) {
         });
         alert("Mesaj başarıyla gönderildi");
 
-        // If we're viewing sent messages, refresh the list
+        
         if (activeTab === "sent") {
           fetchMessages();
         }
@@ -116,7 +116,7 @@ export default function MessageDrawer({ isOpen, onClose }) {
     }).format(date);
   };
 
-  // Function to display message details directly in the list instead of a separate view
+  
   const renderMessageContent = (message) => {
     return (
       <div className="p-4 border-b border-gray-700">

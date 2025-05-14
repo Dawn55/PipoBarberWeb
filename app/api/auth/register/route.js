@@ -6,9 +6,16 @@ export async function POST(request) {
   try {
     const { name, surname, phoneNumber, email, password } = await request.json();
 
+
     if (!name || !surname || !phoneNumber || !email || !password) {
       return NextResponse.json(
         { message: 'Missing required fields' },
+        { status: 400 }
+      );
+    }
+    if(password.length < 6){
+        return NextResponse.json(
+        { message: 'Şifre en az 6 karakter olmak zorunda' },
         { status: 400 }
       );
     }
