@@ -2,6 +2,7 @@ import './globals.css';
 import Providers from './providers';
 import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
+import ChatButton from '@/components/messages/ChatButton';
 
 export const metadata = {
   title: 'Pipo Berber Hoşgeldiniz',
@@ -15,6 +16,7 @@ export default function RootLayout({ children }) {
         <Providers>
           <Navbar />
           <main className="flex-grow">{children}</main>
+          <ChatButton />
           <Footer />
         </Providers>
       </body>

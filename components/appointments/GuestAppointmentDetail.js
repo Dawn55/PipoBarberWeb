@@ -1,6 +1,8 @@
 "use client";
 
-import { useState,useEffect } from "react";
+import { useState, useEffect } from "react";
+import MessageList from "@/components/appointments/MessageList";
+import { formatDateTime, getStatusText } from "@/helpers/statusHelper";
 
 export default function GuestAppointmentDetail({
   appointment: initialAppointment,
@@ -10,36 +12,36 @@ export default function GuestAppointmentDetail({
   const [sending, setSending] = useState(false);
   const [error, setError] = useState(null);
   const [copied, setCopied] = useState(false);
+  const [pageUrl, setPageUrl] = useState("");
+
+  useEffect(() => {
+    
+    setPageUrl(window.location.href);
+    
+    if (appointment) {
+      console.log(appointment);
+    }
+  }, [appointment]);
 
   const getStatusLabel = (status) => {
+    const text = getStatusText(status);
+    
+    let color;
     switch (status) {
       case 0:
-        return { text: "Bekliyor", color: "bg-yellow-600" };
+        color = "bg-yellow-600";
+        break;
       case 1:
-        return { text: "Onaylandı", color: "bg-green-600" };
+        color = "bg-green-600";
+        break;
       case 2:
-        return { text: "İptal Edildi", color: "bg-red-600" };
+        color = "bg-red-600";
+        break;
       default:
-        return { text: "Bilinmiyor", color: "bg-gray-600" };
+        color = "bg-gray-600";
     }
-  };
-    useEffect(() => {
-      if (appointment) {
-        console.log(appointment)
-      }
-    }, [appointment]);
-
-  const formatDateTime = (date, time) => {
-    const appointmentDate = new Date(date);
-    const appointmentTime = new Date(time);
-
-    const formattedDate = appointmentDate.toLocaleDateString("tr-TR");
-    const formattedTime = appointmentTime.toLocaleTimeString("tr-TR", {
-      hour: "2-digit",
-      minute: "2-digit",
-    });
-
-    return `${formattedDate} ${formattedTime}`;
+    
+    return { text, color };
   };
 
   const handleSendMessage = async (e) => {
@@ -95,7 +97,7 @@ export default function GuestAppointmentDetail({
 
   const handleCopyLink = async () => {
     try {
-      await navigator.clipboard.writeText(window.location.href);
+      await navigator.clipboard.writeText(pageUrl);
       setCopied(true);
       setTimeout(() => setCopied(false), 2000);
     } catch {
@@ -115,7 +117,7 @@ export default function GuestAppointmentDetail({
         <div className="mt-3 flex flex-col sm:flex-row sm:items-center gap-2">
           <input
             type="text"
-            value={window.location.href}
+            value={pageUrl}
             readOnly
             className="bg-gray-800 px-3 py-2 rounded text-white w-full sm:w-auto flex-1"
           />
@@ -161,33 +163,7 @@ export default function GuestAppointmentDetail({
 
       <div>
         <h3 className="font-bold mb-3 text-white">Mesajlar</h3>
-        <div className="bg-gray-800 rounded p-3 max-h-64 overflow-y-auto mb-4">
-          {appointment.messages.length === 0 ? (
-            <p className="text-gray-400 text-center py-4">Henüz mesaj yok</p>
-          ) : (
-            <div className="space-y-3">
-              {appointment.messages.map((message) => (
-                <div key={message.id} className="bg-gray-700 rounded p-3">
-                  <div className="flex justify-between items-center mb-1">
-                    <span className="font-medium text-white">
-                      {message.sender?.name || "Siz"}{" "}
-                      {message.sender?.surname || ""}
-                      {message.sender.isAdmin && (
-                        <span className="ml-2 bg-blue-600 text-white text-xs px-2 py-0.5 rounded">
-                          Yönetici
-                        </span>
-                      )}
-                    </span>
-                    <span className="text-xs text-gray-400">
-                      {new Date(message.createdAt).toLocaleString("tr-TR")}
-                    </span>
-                  </div>
-                  <p className="text-white">{message.text}</p>
-                </div>
-              ))}
-            </div>
-          )}
-        </div>
+        <MessageList messages={appointment.messages} />
 
         <form onSubmit={handleSendMessage}>
           <div className="flex">

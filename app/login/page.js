@@ -87,12 +87,6 @@ export default function LoginPage() {
                 >
                   Şifre
                 </label>
-                <Link
-                  href="/forgot-password"
-                  className="text-sm text-gray-400 hover:text-white"
-                >
-                  Şifremi unuttum
-                </Link>
               </div>
               <input
                 id="password"

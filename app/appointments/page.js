@@ -53,12 +53,20 @@ export default function Appointments() {
   };
 
   const handleMessageAdded = (appointmentId, message) => {
+    const messageWithCorrectAdminStatus = {
+      ...message,
+      sender: {
+        ...message.sender,
+        isAdmin: session?.user?.isAdmin || false
+      }
+    };
+    
     setAppointments(
       appointments.map((appointment) => {
         if (appointment.id === appointmentId) {
           return {
             ...appointment,
-            messages: [...(appointment.messages || []), message],
+            messages: [...(appointment.messages || []), messageWithCorrectAdminStatus],
           };
         }
         return appointment;
@@ -68,7 +76,7 @@ export default function Appointments() {
     if (selectedAppointment && selectedAppointment.id === appointmentId) {
       setSelectedAppointment({
         ...selectedAppointment,
-        messages: [...(selectedAppointment.messages || []), message],
+        messages: [...(selectedAppointment.messages || []), messageWithCorrectAdminStatus],
       });
     }
   };
@@ -79,18 +87,18 @@ export default function Appointments() {
         <div className="flex flex-col lg:flex-row">
           <div className="lg:w-1/3 mb-6 lg:mb-0 lg:pr-6">
             <div className="flex justify-between items-center mb-4">
-              <h1 className="text-2xl font-bold text-white">Your Appointments</h1>
+              <h1 className="text-2xl font-bold text-white">Senin Randevuların</h1>
               <button
                 onClick={handleNewAppointmentClick}
                 className="btn btn-primary"
               >
-                New Appointment
+                Yeni Randevu
               </button>
             </div>
             
             {isLoading ? (
               <div className="text-center py-10">
-                <div className="text-accent">Loading appointments...</div>
+                <div className="text-accent">Randevular yükleniyor...</div>
               </div>
             ) : error ? (
               <div className="bg-red-500 text-white p-4 rounded-md">
@@ -98,12 +106,12 @@ export default function Appointments() {
               </div>
             ) : appointments.length === 0 ? (
               <div className="text-center py-10">
-                <p className="text-gray-400 mb-4">You don't have any appointments yet.</p>
+                <p className="text-gray-400 mb-4">Henüz bir randevun yok.</p>
                 <button
                   onClick={handleNewAppointmentClick}
                   className="btn btn-primary"
                 >
-                  Book Your First Appointment
+                  İlk Randevunu Al
                 </button>
               </div>
             ) : (
@@ -115,10 +123,10 @@ export default function Appointments() {
             )}
           </div>
           
-          <div className="lg:w-2/3 lg:pl-6 border-t lg:border-t-0 lg:border-l border-secondary pt-6 lg:pt-0 lg:pl-6">
+          <div className="lg:w-2/3 lg:border-t-0 lg:border-l border-secondary pt-6 lg:pt-0 lg:pl-6">
             {showNewForm ? (
               <div className="card">
-                <h2 className="text-xl font-bold mb-4">Book a New Appointment</h2>
+                <h2 className="text-xl font-bold mb-4">Yeni bir randevu al</h2>
                 <NewAppointmentForm 
                   onAppointmentCreated={handleAppointmentCreated}
                   onCancel={() => setShowNewForm(false)}
@@ -134,13 +142,13 @@ export default function Appointments() {
             ) : (
               <div className="text-center py-20 px-4">
                 <h2 className="text-xl font-semibold text-gray-400 mb-4">
-                  Select an appointment to view details or book a new one
+                  Detaylarını görüntülemek için bir randevu seç yada yeni bir tane al
                 </h2>
                 <button
                   onClick={handleNewAppointmentClick}
                   className="btn btn-primary"
                 >
-                  Book New Appointment
+                  Yeni Randevu al
                 </button>
               </div>
             )}

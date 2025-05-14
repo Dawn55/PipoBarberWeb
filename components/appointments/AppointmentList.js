@@ -1,6 +1,8 @@
 "use client";
 
 import { format } from "date-fns";
+import { tr } from "date-fns/locale";
+import { getStatusText } from "@/helpers/statusHelper";
 
 export default function AppointmentList({
   appointments,
@@ -9,18 +11,21 @@ export default function AppointmentList({
 }) {
   const formatAppointmentTime = (timeString) => {
     const time = new Date(timeString);
-    return format(time, "h:mm a");
+    return format(time, "HH:mm", { locale: tr });
   };
+
   const getStatusLabel = (status) => {
+    const text = getStatusText(status);
+    
     switch (status) {
       case 0:
-        return { text: "Pending", color: "bg-yellow-600" };
+        return { text, color: "bg-yellow-600" };
       case 1:
-        return { text: "Approved", color: "bg-green-600" };
+        return { text, color: "bg-green-600" };
       case 2:
-        return { text: "Cancelled", color: "bg-red-600" };
+        return { text, color: "bg-red-600" };
       default:
-        return { text: "Unknown", color: "bg-gray-600" };
+        return { text, color: "bg-gray-600" };
     }
   };
 
@@ -39,7 +44,7 @@ export default function AppointmentList({
           <div className="flex justify-between items-start">
             <div>
               <p className="font-semibold text-white">
-                {format(new Date(appointment.date), "MMMM d, yyyy")}
+                {format(new Date(appointment.date), "d MMMM yyyy", { locale: tr })}
               </p>
               <p className="text-gray-400">
                 {formatAppointmentTime(appointment.time)}
@@ -47,7 +52,7 @@ export default function AppointmentList({
             </div>
             <div className="flex flex-col items-end space-y-1">
               <div className="bg-primary px-2 py-1 rounded text-xs text-gray-300">
-                {appointment.messages?.length || 0} message(s)
+                {appointment.messages?.length || 0} mesaj
               </div>
               {(() => {
                 const { text, color } = getStatusLabel(appointment.status);

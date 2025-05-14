@@ -18,6 +18,8 @@ model User {
   updatedAt      DateTime @updatedAt @db.DateTime2
   appointments   Appointment[]
   appointmentMessages AppointmentMessage[]
+  sentMessages   Message[] @relation("SentMessages")
+  receivedMessages Message[] @relation("ReceivedMessages")
 
   @@map("Users")
 }
@@ -47,4 +49,16 @@ createdAt DateTime @default(now()) @db.DateTime2
 appointment Appointment @relation(fields: [appointmentId], references: [id], onUpdate: NoAction, map: "FK_AppointmentMessages_Appointments") 
 sender User @relation(fields: [senderId], references: [id], onUpdate: NoAction, map: "FK_AppointmentMessages_Users") 
 @@map("AppointmentMessages")
+}
+model Message {
+  id          Int    @id(map: "PK_Messages") @default(autoincrement())
+  sender_id   Int
+  receiver_id Int
+  title       String @db.VarChar(50)
+  description String @db.VarChar(500)
+  createdAt DateTime @default(now()) @db.DateTime2 
+  sender      User   @relation("SentMessages", fields: [sender_id], references: [id], onUpdate: NoAction, map: "FK_Messages_Users")
+  receiver    User   @relation("ReceivedMessages", fields: [receiver_id], references: [id], onUpdate: NoAction, map: "FK_Messages_Users1")
+
+  @@map("Messages")
 }
