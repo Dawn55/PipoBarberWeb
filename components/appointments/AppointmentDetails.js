@@ -107,6 +107,11 @@ export default function AppointmentDetail({ appointment, onMessageSent }) {
                   <div className="flex justify-between items-center mb-1">
                     <span className="font-medium">
                       {message.sender.name} {message.sender.surname}
+                                          {message.sender.isAdmin && (
+                      <span className="ml-2 bg-blue-600 text-white text-xs px-2 py-0.5 rounded">
+                        Yönetici
+                      </span>
+                    )}
                     </span>
                     <span className="text-xs text-gray-400">
                       {new Date(message.createdAt).toLocaleString()}

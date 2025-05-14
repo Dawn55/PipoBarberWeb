@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import prisma from "@/lib/prisma";
+import { isAdmin } from "@/lib/auth";
 
 export async function GET(req, { params }) {
   const { token } = params;
@@ -14,7 +15,7 @@ export async function GET(req, { params }) {
         messages: {
           include: {
             sender: {
-              select: { name: true, surname: true },
+              select: { name: true, surname: true,isAdmin:true },
             },
           },
           orderBy: { createdAt: "asc" },

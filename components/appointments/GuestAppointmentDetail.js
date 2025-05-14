@@ -1,8 +1,10 @@
-'use client';
+"use client";
 
-import { useState } from "react";
+import { useState,useEffect } from "react";
 
-export default function GuestAppointmentDetail({ appointment: initialAppointment }) {
+export default function GuestAppointmentDetail({
+  appointment: initialAppointment,
+}) {
   const [appointment, setAppointment] = useState(initialAppointment);
   const [messageText, setMessageText] = useState("");
   const [sending, setSending] = useState(false);
@@ -21,13 +23,18 @@ export default function GuestAppointmentDetail({ appointment: initialAppointment
         return { text: "Bilinmiyor", color: "bg-gray-600" };
     }
   };
+    useEffect(() => {
+      if (appointment) {
+        console.log(appointment)
+      }
+    }, [appointment]);
 
   const formatDateTime = (date, time) => {
     const appointmentDate = new Date(date);
     const appointmentTime = new Date(time);
 
-    const formattedDate = appointmentDate.toLocaleDateString('tr-TR');
-    const formattedTime = appointmentTime.toLocaleTimeString('tr-TR', {
+    const formattedDate = appointmentDate.toLocaleDateString("tr-TR");
+    const formattedTime = appointmentTime.toLocaleTimeString("tr-TR", {
       hour: "2-digit",
       minute: "2-digit",
     });
@@ -98,11 +105,12 @@ export default function GuestAppointmentDetail({ appointment: initialAppointment
 
   return (
     <div className="bg-gray-900 rounded-lg p-6">
-      
       <div className="bg-yellow-700 text-yellow-100 p-4 rounded mb-6 border-l-4 border-yellow-400">
         <h3 className="font-bold text-lg mb-2">🔐 Önemli Bilgilendirme</h3>
         <p>
-          Bu sayfa sadece bu bağlantı ile görüntülenebilir. Lütfen bu bağlantıyı kaybetmeyin, aksi takdirde randevunuza tekrar erişemezsiniz. Görüntüleme yapamaz ve mesaj ekleyemezsiniz.
+          Bu sayfa sadece bu bağlantı ile görüntülenebilir. Lütfen bu bağlantıyı
+          kaybetmeyin, aksi takdirde randevunuza tekrar erişemezsiniz.
+          Görüntüleme yapamaz ve mesaj ekleyemezsiniz.
         </p>
         <div className="mt-3 flex flex-col sm:flex-row sm:items-center gap-2">
           <input
@@ -120,7 +128,6 @@ export default function GuestAppointmentDetail({ appointment: initialAppointment
         </div>
       </div>
 
-      
       <div className="border-b border-gray-800 pb-4 mb-4">
         <h2 className="text-xl font-bold mb-4 text-white">Randevu Detayları</h2>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -135,7 +142,9 @@ export default function GuestAppointmentDetail({ appointment: initialAppointment
             {(() => {
               const { text, color } = getStatusLabel(appointment.status);
               return (
-                <span className={`inline-block px-2 py-1 text-xs font-semibold rounded ${color} text-white`}>
+                <span
+                  className={`inline-block px-2 py-1 text-xs font-semibold rounded ${color} text-white`}
+                >
                   {text}
                 </span>
               );
@@ -150,7 +159,6 @@ export default function GuestAppointmentDetail({ appointment: initialAppointment
         </div>
       </div>
 
-      
       <div>
         <h3 className="font-bold mb-3 text-white">Mesajlar</h3>
         <div className="bg-gray-800 rounded p-3 max-h-64 overflow-y-auto mb-4">
@@ -162,10 +170,16 @@ export default function GuestAppointmentDetail({ appointment: initialAppointment
                 <div key={message.id} className="bg-gray-700 rounded p-3">
                   <div className="flex justify-between items-center mb-1">
                     <span className="font-medium text-white">
-                      {message.sender?.name || "Siz"} {message.sender?.surname || ""}
+                      {message.sender?.name || "Siz"}{" "}
+                      {message.sender?.surname || ""}
+                      {message.sender.isAdmin && (
+                        <span className="ml-2 bg-blue-600 text-white text-xs px-2 py-0.5 rounded">
+                          Yönetici
+                        </span>
+                      )}
                     </span>
                     <span className="text-xs text-gray-400">
-                      {new Date(message.createdAt).toLocaleString('tr-TR')}
+                      {new Date(message.createdAt).toLocaleString("tr-TR")}
                     </span>
                   </div>
                   <p className="text-white">{message.text}</p>
