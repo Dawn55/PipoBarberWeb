@@ -11,7 +11,7 @@ export default function AppointmentDetail({ appointment, onMessageSent }) {
 
   const getStatusLabel = (status) => {
     const text = getStatusText(status);
-    
+
     switch (status) {
       case 0:
         return { text, color: "bg-yellow-600" };
@@ -88,11 +88,19 @@ export default function AppointmentDetail({ appointment, onMessageSent }) {
 
       <div>
         <h3 className="font-bold mb-3">Mesajlar</h3>
-        <MessageList 
-          messages={appointment.messages} 
-          currentUser={appointment.user}
-        />
 
+        {!appointment?.messages?.length && (
+          <div className="bg-gray-800 rounded p-3 max-h-64 overflow-y-auto mb-4">
+            <p className="text-gray-400 text-center py-4">Henüz mesaj yok</p>
+          </div>
+        )}
+
+        {appointment?.messages?.length > 0 && (
+          <MessageList
+            messages={appointment.messages}
+            currentUser={appointment.user}
+          />
+        )}
         <form onSubmit={handleSendMessage}>
           <div className="flex">
             <input

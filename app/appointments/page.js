@@ -5,6 +5,7 @@ import { useSession } from 'next-auth/react';
 import NewAppointmentForm from '@/components/appointments/AppointmentForm';
 import AppointmentList from '@/components/appointments/AppointmentList';
 import AppointmentDetails from '@/components/appointments/AppointmentDetails';
+import Link from 'next/link';
 
 export default function Appointments() {
   const { data: session } = useSession();
@@ -46,8 +47,10 @@ export default function Appointments() {
     setShowNewForm(true);
   };
 
+  // Yeni randevu oluşturulduğunda çağrılacak fonksiyon
   const handleAppointmentCreated = (newAppointment) => {
-    setAppointments([...appointments, newAppointment]);
+    // Yeni randevu oluşturulduğunda randevu listesi bu fonksiyon ile güncellenir
+    setAppointments(prevAppointments => [...prevAppointments, newAppointment]);
     setShowNewForm(false);
     setSelectedAppointment(newAppointment);
   };
@@ -80,6 +83,49 @@ export default function Appointments() {
       });
     }
   };
+
+  // Admin kullanıcıları için yönlendirme paneli
+  if (session?.user?.isAdmin) {
+    return (
+      <div className="py-20">
+        <div className="max-w-md mx-auto bg-base-200 p-8 rounded-lg shadow-lg text-center">
+          <h1 className="text-2xl font-bold text-white mb-6">Yönetici Erişimi</h1>
+          <p className="text-lg mb-8">Randevu İşlemleri için yönetici panelini kullanın</p>
+          <Link href="/admin" className="btn btn-primary btn-lg mb-6">
+            Yönetici Paneline Git
+          </Link>
+          
+          {showNewForm ? (
+            <div className="mt-10 text-left">
+              <div className="flex justify-between items-center mb-4">
+                <h2 className="text-xl font-bold">Yeni Randevu Oluştur</h2>
+                <button 
+                  onClick={() => setShowNewForm(false)}
+                  className="btn btn-circle btn-sm"
+                >
+                  ✕
+                </button>
+              </div>
+              <NewAppointmentForm 
+                onAppointmentCreated={handleAppointmentCreated}
+                onCancel={() => setShowNewForm(false)}
+              />
+            </div>
+          ) : (
+            <div className="mt-6 pt-6 border-t border-base-300">
+              <p className="mb-4">Eğer randevu almak istiyorsanız buraya tıklayın</p>
+              <button 
+                onClick={() => setShowNewForm(true)} 
+                className="btn btn-secondary"
+              >
+                Randevu Al
+              </button>
+            </div>
+          )}
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="py-10">

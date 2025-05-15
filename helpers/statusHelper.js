@@ -23,3 +23,16 @@ export function getStatusText(status) {
       return "Bilinmeyen";
   }
 }
+
+export function getStatusClass(status) {
+  switch (parseInt(status)) {
+    case 0:
+      return "bg-yellow-600";
+    case 1:
+      return "bg-green-600"; 
+    case 2:
+      return "bg-red-600";    
+    default:
+      return "bg-blue-600";   
+  }
+}

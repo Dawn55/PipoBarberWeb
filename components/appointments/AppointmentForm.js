@@ -4,7 +4,7 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { useSession } from "next-auth/react";
 
-export default function AppointmentForm() {
+export default function AppointmentForm({ onAppointmentCreated }) {
   const { data: session } = useSession();
   const router = useRouter();
   const [isLoading, setIsLoading] = useState(false);
@@ -60,20 +60,24 @@ export default function AppointmentForm() {
       const data = await response.json();
 
       if (!response.ok) {
-        
         throw new Error(data.error || "Randevu oluşturulamadı");
       }
 
       setSuccess("Randevu başarıyla oluşturuldu!");
+      
+      // Yeni oluşturulan randevuyu parent bileşene bildir
+      if (onAppointmentCreated && typeof onAppointmentCreated === 'function') {
+        onAppointmentCreated(data);
+      }
+      
       setFormData({
         description: "",
         date: "",
         time: "",
       });
       
-      setTimeout(() => {
-        router.refresh();
-      }, 1500);
+      // Sayfa güncellemesini hemen yap, gecikme kullanma
+      router.refresh();
       
     } catch (error) {
       setError(error.message || "Randevu oluşturulurken bir hata oluştu");

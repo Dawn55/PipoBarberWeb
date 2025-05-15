@@ -6,6 +6,7 @@ import { useRouter } from "next/navigation";
 import AdminAppointmentList from "@/components/adminPanel/AdminAppointmentList";
 import AdminAppointmentDetails from "@/components/adminPanel/AdminAppointmentDetails";
 import AdminUserList from "@/components/adminPanel/AdminUserList";
+import AdminMessageList from "@/components/adminPanel/AdminMessageList";
 
 export default function AdminPanel() {
   const { data: session, status } = useSession();
@@ -13,10 +14,10 @@ export default function AdminPanel() {
   const [activeTab, setActiveTab] = useState("appointments");
   const [appointments, setAppointments] = useState([]);
   const [users, setUsers] = useState([]);
+  const [messages, setMessages] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [selectedAppointment, setSelectedAppointment] = useState(null);
-
   useEffect(() => {
     if (status === "loading") return;
 
@@ -43,6 +44,20 @@ export default function AdminPanel() {
         if (!res.ok) throw new Error("Kullanıcılar alınamadı");
         const data = await res.json();
         setUsers(data);
+      } else if (activeTab === "messages") {
+        const res = await fetch("/api/messages");
+        if (!res.ok) throw new Error("Mesajlar alınamadı");
+        const data = await res.json();
+        setMessages(data);
+        
+        
+        if (users.length === 0) {
+          const usersRes = await fetch("/api/users");
+          if (usersRes.ok) {
+            const usersData = await usersRes.json();
+            setUsers(usersData);
+          }
+        }
       }
     } catch (err) {
       setError(err.message);
@@ -151,7 +166,7 @@ export default function AdminPanel() {
 
       const newMessage = await res.json();
       
-      // Admin badge sorunu için: mesaj gönderildiğinde isAdmin bilgisini session'dan alıyoruz
+      
       const messageWithCorrectAdminStatus = {
         ...newMessage,
         sender: {
@@ -176,6 +191,46 @@ export default function AdminPanel() {
         messages: [...selectedAppointment.messages, messageWithCorrectAdminStatus],
       });
 
+      return true;
+    } catch (err) {
+      setError(err.message);
+      return false;
+    }
+  };
+
+  const handleSendDirectMessage = async (messageData) => {
+    try {
+      const res = await fetch("/api/messages/send", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(messageData),
+      });
+
+      if (!res.ok) throw new Error("Mesaj gönderilemedi");
+
+      const newMessage = await res.json();
+      setMessages([newMessage, ...messages]);
+      
+      return true;
+    } catch (err) {
+      setError(err.message);
+      return false;
+    }
+  };
+
+  const handleDeleteMessage = async (messageId) => {
+    if (!confirm("Bu mesajı silmek istediğinize emin misiniz?")) {
+      return;
+    }
+
+    try {
+      const res = await fetch(`/api/messages/${messageId}`, {
+        method: "DELETE",
+      });
+
+      if (!res.ok) throw new Error("Mesaj silinemedi");
+
+      setMessages(messages.filter((msg) => msg.id !== messageId));
       return true;
     } catch (err) {
       setError(err.message);
@@ -223,12 +278,20 @@ export default function AdminPanel() {
           Randevular
         </button>
         <button
-          className={`py-2 px-4 ${
+          className={`py-2 px-4 mr-2 ${
             activeTab === "users" ? "border-b-2 border-white font-bold" : ""
           }`}
           onClick={() => setActiveTab("users")}
         >
           Kullanıcılar
+        </button>
+        <button
+          className={`py-2 px-4 ${
+            activeTab === "messages" ? "border-b-2 border-white font-bold" : ""
+          }`}
+          onClick={() => setActiveTab("messages")}
+        >
+          Mesajlar
         </button>
       </div>
 
@@ -264,6 +327,16 @@ export default function AdminPanel() {
           currentUserId={session?.user?.id}
           onRoleChange={handleRoleChange}
           onDeleteUser={handleDeleteUser}
+        />
+      )}
+
+      {activeTab === "messages" && (
+        <AdminMessageList 
+          messages={messages}
+          users={users}
+          currentUserId={session?.user?.id}
+          onDeleteMessage={handleDeleteMessage}
+          onSendMessage={handleSendDirectMessage}
         />
       )}
     </div>
