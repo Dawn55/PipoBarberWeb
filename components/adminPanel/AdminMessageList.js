@@ -16,21 +16,34 @@ export default function AdminMessageList({
   const [showNewMessage, setShowNewMessage] = useState(false);
   const [refresh, setRefresh] = useState(0); 
 
-  
+  // Sayfa yenileme fonksiyonu
   const refreshPage = () => {
     setRefresh(prev => prev + 1);
   };
 
-  
+  // Mesaj silme işlemi
   const handleDeleteMessage = async (messageId) => {
     const success = await onDeleteMessage(messageId);
     if (success) {
       refreshPage();
+      
+      // Mesaj silindiğinde seçili konuşmayı da güncellememiz gerekiyor
+      if (selectedConversation) {
+        const updatedMessages = selectedConversation.messages.filter(
+          msg => msg.id !== messageId
+        );
+        
+        // Eğer silinecek mesaj seçili konuşmaya aitse, konuşmayı güncelle
+        setSelectedConversation({
+          ...selectedConversation,
+          messages: updatedMessages
+        });
+      }
     }
     return success;
   };
 
-  
+  // Yeni mesaj gönderme işlemi
   const handleSendMessage = async (e) => {
     e.preventDefault();
 
@@ -55,44 +68,69 @@ export default function AdminMessageList({
     }
   };
 
-  const conversations = [];
-  const conversationMap = new Map();
-
-  messages.forEach((message) => {
-    const user1 = Math.min(message.sender_id, message.receiver_id);
-    const user2 = Math.max(message.sender_id, message.receiver_id);
-    const convKey = `${user1}-${user2}`;
-
-    if (!conversationMap.has(convKey)) {
-      const convo = {
-        id: convKey,
-        participants: [message.sender_id, message.receiver_id],
-        otherUserId:
-          message.sender_id === currentUserId
-            ? message.receiver_id
-            : message.sender_id,
-        messages: [],
-      };
-      conversationMap.set(convKey, convo);
-      conversations.push(convo);
+  // useEffect ile messages değiştiğinde konuşmaları yeniden oluştur
+  useEffect(() => {
+    if (selectedConversation) {
+      // Mesajlar değiştiğinde, seçili konuşmayı da güncelle
+      const updatedConversations = createConversations(messages);
+      const updatedConversation = updatedConversations.find(
+        conv => conv.id === selectedConversation.id
+      );
+      
+      if (updatedConversation) {
+        setSelectedConversation(updatedConversation);
+      }
     }
+  }, [messages, refresh]);
 
-    conversationMap.get(convKey).messages.push(message);
-  });
+  // Konuşmaları oluşturan yardımcı fonksiyon
+  const createConversations = (messageList) => {
+    const conversationMap = new Map();
+    const conversationList = [];
 
-  conversations.forEach((convo) => {
-    convo.messages.sort(
-      (a, b) => new Date(b.createdAt) - new Date(a.createdAt)
-    );
-  });
+    messageList.forEach((message) => {
+      const user1 = Math.min(message.sender_id, message.receiver_id);
+      const user2 = Math.max(message.sender_id, message.receiver_id);
+      const convKey = `${user1}-${user2}`;
 
-  conversations.sort((a, b) => {
-    if (a.messages.length === 0) return 1;
-    if (b.messages.length === 0) return -1;
-    return (
-      new Date(b.messages[0].createdAt) - new Date(a.messages[0].createdAt)
-    );
-  });
+      if (!conversationMap.has(convKey)) {
+        const convo = {
+          id: convKey,
+          participants: [message.sender_id, message.receiver_id],
+          otherUserId:
+            message.sender_id === currentUserId
+              ? message.receiver_id
+              : message.sender_id,
+          messages: [],
+        };
+        conversationMap.set(convKey, convo);
+        conversationList.push(convo);
+      }
+
+      conversationMap.get(convKey).messages.push(message);
+    });
+
+    // Mesajları tarihe göre sırala
+    conversationList.forEach((convo) => {
+      convo.messages.sort(
+        (a, b) => new Date(b.createdAt) - new Date(a.createdAt)
+      );
+    });
+
+    // Konuşmaları son mesaj tarihine göre sırala
+    conversationList.sort((a, b) => {
+      if (a.messages.length === 0) return 1;
+      if (b.messages.length === 0) return -1;
+      return (
+        new Date(b.messages[0].createdAt) - new Date(a.messages[0].createdAt)
+      );
+    });
+
+    return conversationList;
+  };
+
+  // Konuşmaları oluştur
+  const conversations = createConversations(messages);
 
   const findUser = (userId) => {
     return users.find((user) => user.id === parseInt(userId));
@@ -116,7 +154,7 @@ export default function AdminMessageList({
       return;
     }
 
-    const conversation = conversationMap.get(conversationId);
+    const conversation = conversations.find(conv => conv.id === conversationId);
     if (!conversation) return;
 
     const deletePromises = conversation.messages.map((msg) =>
@@ -129,6 +167,25 @@ export default function AdminMessageList({
     } catch (error) {
       console.error("Mesajlar silinirken hata oluştu:", error);
     }
+  };
+
+  // Konuşmada mesaj gönderme işleyicisi
+  const handleSendConversationMessage = async (title, text) => {
+    if (!selectedConversation) return false;
+    
+    const result = await onSendMessage({
+      receiver_id: selectedConversation.otherUserId,
+      title,
+      description: text,
+    });
+    
+    if (result) {
+      // Bu noktada page.js'te messages dizisi güncellenecek, 
+      // ancak useEffect sayesinde selectedConversation'ı da güncelleyeceğiz
+      refreshPage();
+    }
+    
+    return result;
   };
 
   return (
@@ -217,7 +274,7 @@ export default function AdminMessageList({
                       const user2 = Math.max(currentUserId, parseInt(userId));
                       const convKey = `${user1}-${user2}`;
 
-                      let convo = conversationMap.get(convKey);
+                      let convo = conversations.find(c => c.id === convKey);
                       if (!convo) {
                         convo = {
                           id: convKey,
@@ -287,17 +344,7 @@ export default function AdminMessageList({
             onDeleteConversation={() =>
               handleDeleteConversation(selectedConversation.id)
             }
-            onSendMessage={(title, text) => {
-              const result = onSendMessage({
-                receiver_id: selectedConversation.otherUserId,
-                title,
-                description: text,
-              });
-              if (result) {
-                refreshPage();
-              }
-              return result;
-            }}
+            onSendMessage={handleSendConversationMessage}
           />
         ) : (
           <div className="bg-gray-900 rounded-lg p-4 flex items-center justify-center h-full text-gray-400">
