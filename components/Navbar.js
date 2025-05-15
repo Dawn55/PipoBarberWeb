@@ -45,6 +45,7 @@ export default function Navbar() {
                 <NavLink href="/">Ana Sayfa</NavLink>
                 <NavLink href="/about">Hakkımızda</NavLink>
                 {session && <NavLink href="/appointments">Randevular</NavLink>}
+                {session && <NavLink href="/profile">Profilim</NavLink>}
                 {session?.user?.isAdmin && (
                   <NavLink href="/admin">Yönetici Paneli</NavLink>
                 )}
@@ -138,6 +139,14 @@ export default function Navbar() {
               className="block px-3 py-2 rounded-md text-base font-medium text-gray-300 hover:bg-secondary hover:text-white"
             >
               Randevular
+            </Link>
+          )}
+          {session && (
+            <Link
+              href="/profile"
+              className="block px-3 py-2 rounded-md text-base font-medium text-gray-300 hover:bg-secondary hover:text-white"
+            >
+              Profilim
             </Link>
           )}
           {session?.user?.isAdmin && (

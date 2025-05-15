@@ -14,11 +14,11 @@ export default function AdminMessageList({
   const [messageTitle, setMessageTitle] = useState("");
   const [messageText, setMessageText] = useState("");
   const [showNewMessage, setShowNewMessage] = useState(false);
-  const [refresh, setRefresh] = useState(0); 
+  const [refresh, setRefresh] = useState(0);
 
   // Sayfa yenileme fonksiyonu
   const refreshPage = () => {
-    setRefresh(prev => prev + 1);
+    setRefresh((prev) => prev + 1);
   };
 
   // Mesaj silme işlemi
@@ -26,17 +26,17 @@ export default function AdminMessageList({
     const success = await onDeleteMessage(messageId);
     if (success) {
       refreshPage();
-      
+
       // Mesaj silindiğinde seçili konuşmayı da güncellememiz gerekiyor
       if (selectedConversation) {
         const updatedMessages = selectedConversation.messages.filter(
-          msg => msg.id !== messageId
+          (msg) => msg.id !== messageId
         );
-        
+
         // Eğer silinecek mesaj seçili konuşmaya aitse, konuşmayı güncelle
         setSelectedConversation({
           ...selectedConversation,
-          messages: updatedMessages
+          messages: updatedMessages,
         });
       }
     }
@@ -74,9 +74,9 @@ export default function AdminMessageList({
       // Mesajlar değiştiğinde, seçili konuşmayı da güncelle
       const updatedConversations = createConversations(messages);
       const updatedConversation = updatedConversations.find(
-        conv => conv.id === selectedConversation.id
+        (conv) => conv.id === selectedConversation.id
       );
-      
+
       if (updatedConversation) {
         setSelectedConversation(updatedConversation);
       }
@@ -144,6 +144,14 @@ export default function AdminMessageList({
       })
       .join(" ◆ ");
   };
+  const getParticipantEmails = (participants) => {
+    return participants
+      .map((userId) => {
+        const user = findUser(userId);
+        return user ? `${user.email}` : "Bilinmeyen Kullanıcı";
+      })
+      .join(" ◆ ");
+  };
 
   const handleDeleteConversation = async (conversationId) => {
     if (
@@ -154,7 +162,9 @@ export default function AdminMessageList({
       return;
     }
 
-    const conversation = conversations.find(conv => conv.id === conversationId);
+    const conversation = conversations.find(
+      (conv) => conv.id === conversationId
+    );
     if (!conversation) return;
 
     const deletePromises = conversation.messages.map((msg) =>
@@ -172,19 +182,19 @@ export default function AdminMessageList({
   // Konuşmada mesaj gönderme işleyicisi
   const handleSendConversationMessage = async (title, text) => {
     if (!selectedConversation) return false;
-    
+
     const result = await onSendMessage({
       receiver_id: selectedConversation.otherUserId,
       title,
       description: text,
     });
-    
+
     if (result) {
-      // Bu noktada page.js'te messages dizisi güncellenecek, 
+      // Bu noktada page.js'te messages dizisi güncellenecek,
       // ancak useEffect sayesinde selectedConversation'ı da güncelleyeceğiz
       refreshPage();
     }
-    
+
     return result;
   };
 
@@ -231,6 +241,10 @@ export default function AdminMessageList({
                       <p className="font-medium">
                         {getParticipantNames(conversation.participants)}
                       </p>
+                      <p className="text-xs text-gray-500">
+                        
+                        {getParticipantEmails(conversation.participants)}
+                      </p>
                       <p className="text-sm text-gray-400 truncate">
                         {latestMessage.title}
                       </p>
@@ -274,7 +288,7 @@ export default function AdminMessageList({
                       const user2 = Math.max(currentUserId, parseInt(userId));
                       const convKey = `${user1}-${user2}`;
 
-                      let convo = conversations.find(c => c.id === convKey);
+                      let convo = conversations.find((c) => c.id === convKey);
                       if (!convo) {
                         convo = {
                           id: convKey,
