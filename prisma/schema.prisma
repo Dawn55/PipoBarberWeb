@@ -62,3 +62,13 @@ model Message {
 
   @@map("Messages")
 }
+model Transaction {
+  id          Int      @id(map: "PK_Transactions") @default(autoincrement())
+  type        String   @db.VarChar(10) // "income" or "expense" 
+  amount      Decimal  @db.Decimal(18, 2)
+  date        DateTime @db.Date
+  description String   @db.VarChar(500)  
+  createdAt   DateTime @default(now()) @db.DateTime2
+
+  @@map("Transactions")
+}
